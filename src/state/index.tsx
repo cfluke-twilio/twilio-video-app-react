@@ -3,6 +3,7 @@ import { TwilioError } from 'twilio-video';
 import { settingsReducer, initialSettings, Settings, SettingsAction } from './settings/settingsReducer';
 import useFirebaseAuth from './useFirebaseAuth/useFirebaseAuth';
 import usePasscodeAuth from './usePasscodeAuth/usePasscodeAuth';
+import useOktaAuth from './useOktaAuth/useOktaAuth';
 import { User } from 'firebase';
 
 export interface StateContextType {
@@ -10,7 +11,7 @@ export interface StateContextType {
   setError(error: TwilioError | null): void;
   getToken(name: string, room: string, passcode?: string): Promise<string>;
   user?: User | null | { displayName: undefined; photoURL: undefined; passcode?: string };
-  signIn?(passcode?: string): Promise<void>;
+  signIn?(passcode?: string, username?: string, password?: string): Promise<void>;
   signOut?(): Promise<void>;
   isAuthReady?: boolean;
   isFetching: boolean;
@@ -56,6 +57,11 @@ export default function AppStateProvider(props: React.PropsWithChildren<{}>) {
     contextValue = {
       ...contextValue,
       ...usePasscodeAuth(), // eslint-disable-line react-hooks/rules-of-hooks
+    };
+  } else if (process.env.REACT_APP_SET_AUTH === 'okta') {
+    contextValue = {
+      ...contextValue,
+      ...useOktaAuth(), // eslint-disable-line react-hooks/rules-of-hooks
     };
   } else {
     contextValue = {

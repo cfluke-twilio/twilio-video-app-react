@@ -5,9 +5,11 @@ import { TwilioError } from 'twilio-video';
 import AppStateProvider, { useAppState } from './index';
 import useFirebaseAuth from './useFirebaseAuth/useFirebaseAuth';
 import usePasscodeAuth from './usePasscodeAuth/usePasscodeAuth';
+import useOktaAuth from './useOktaAuth/useOktaAuth';
 
 jest.mock('./useFirebaseAuth/useFirebaseAuth', () => jest.fn(() => ({ user: 'firebaseUser' })));
 jest.mock('./usePasscodeAuth/usePasscodeAuth', () => jest.fn(() => ({ user: 'passcodeUser' })));
+jest.mock('./useOktaAuth/useOktaAuth', () => jest.fn(() => ({ user: 'oktaUser' })));
 
 const mockUsePasscodeAuth = usePasscodeAuth as jest.Mock<any>;
 
@@ -54,6 +56,7 @@ describe('the useAppState hook', () => {
       renderHook(useAppState, { wrapper });
       expect(useFirebaseAuth).not.toHaveBeenCalled();
       expect(usePasscodeAuth).not.toHaveBeenCalled();
+      expect(useOktaAuth).not.toHaveBeenCalled();
     });
   });
 
@@ -63,6 +66,15 @@ describe('the useAppState hook', () => {
       const { result } = renderHook(useAppState, { wrapper });
       expect(useFirebaseAuth).toHaveBeenCalled();
       expect(result.current.user).toBe('firebaseUser');
+    });
+  });
+
+  describe('with okta auth enabled', () => {
+    it('should use the useOktaAuth hook', async () => {
+      process.env.REACT_APP_SET_AUTH = 'okta';
+      const { result } = renderHook(useAppState, { wrapper });
+      expect(useOktaAuth).toHaveBeenCalled();
+      expect(result.current.user).toBe('oktaUser');
     });
   });
 

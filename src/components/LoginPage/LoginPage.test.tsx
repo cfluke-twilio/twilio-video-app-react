@@ -88,7 +88,7 @@ describe('the LoginPage component', () => {
       });
 
       setImmediate(() => {
-        expect(mockSignin).toHaveBeenCalledWith('1234');
+        expect(mockSignin).toHaveBeenCalledWith('1234', '', '');
         done();
       });
     });
@@ -102,13 +102,13 @@ describe('the LoginPage component', () => {
       act(() => {
         fireEvent.change(getByLabelText('Passcode'), { target: { value: '1234' } });
       });
-      
+
       act(() => {
         fireEvent.submit(getByText('Submit'));
       });
 
-      const element = await waitForElement(() => getByText('Test Error')) 
-      expect(element).toBeTruthy()
+      const element = await waitForElement(() => getByText('Test Error'));
+      expect(element).toBeTruthy();
     });
   });
 

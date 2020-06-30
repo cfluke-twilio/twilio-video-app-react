@@ -67,13 +67,15 @@ export default function LoginPage() {
   const history = useHistory();
   const location = useLocation<{ from: Location }>();
   const [passcode, setPasscode] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState<Error | null>(null);
 
   const isAuthEnabled = Boolean(process.env.REACT_APP_SET_AUTH);
 
   const login = () => {
     setAuthError(null);
-    signIn?.(passcode)
+    signIn?.(passcode, username, password)
       .then(() => {
         history.replace(location?.state?.from || { pathname: '/' });
       })
@@ -124,6 +126,41 @@ export default function LoginPage() {
                   )}
                 </div>
                 <Button variant="contained" className={classes.button} type="submit" disabled={!passcode.length}>
+                  Submit
+                </Button>
+              </Grid>
+            </form>
+          )}
+
+          {process.env.REACT_APP_SET_AUTH === 'okta' && (
+            <form onSubmit={handleSubmit}>
+              <Grid container alignItems="center" direction="column">
+                <TextField
+                  id="input-username"
+                  label="Username"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+                  type="text"
+                />
+                <TextField
+                  id="input-password"
+                  label="Password"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                  type="password"
+                />
+                <div>
+                  {authError && (
+                    <Typography variant="caption" className={classes.errorMessage}>
+                      <ErrorOutlineIcon />
+                      {authError.message}
+                    </Typography>
+                  )}
+                </div>
+                <Button
+                  variant="contained"
+                  className={classes.button}
+                  type="submit"
+                  disabled={!username.length || !password.length}
+                >
                   Submit
                 </Button>
               </Grid>
